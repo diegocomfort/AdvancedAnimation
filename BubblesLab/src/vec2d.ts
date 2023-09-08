@@ -22,6 +22,14 @@ export default class Vec2D {
         return new Vec2D(this.x, this.y);
     }
 
+    setX(xMutator: (x: number) => number): Vec2D {
+        return new Vec2D(xMutator(this.x), this.y);
+    }
+
+    setY(yMutator: (y: number) => number): Vec2D {
+        return new Vec2D(this.x, yMutator(this.y));
+    }
+
     add(vector: Vec2D): Vec2D {
         return new Vec2D(this.x + vector.x, this.y + vector.y);
     }
@@ -40,6 +48,14 @@ export default class Vec2D {
 
     magSq(): number {
         return this.x ** 2 + this.y ** 2;
+    }
+
+    setMagnitude(newMag: number): Vec2D {
+        return this.mult(newMag / this.mag());
+    }
+    
+    limit(maxMag: number): Vec2D {
+        return this.mag() > maxMag ? this.setMagnitude(1): this;
     }
 
     div(scalar: number): Vec2D {
@@ -72,7 +88,5 @@ export default class Vec2D {
     distSQ(vector: Vec2D): number {
         return (this.x - vector.x) ** 2 + (this.y - vector.y) **2;
     }
-
-
 };
 
