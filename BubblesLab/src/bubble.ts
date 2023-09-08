@@ -26,28 +26,48 @@ export default class Bubble {
         updateFunction(this);
     }
 
-    static UPDATE_POS = (bubble: Bubble): void => {
-        bubble.vel = bubble.vel.add(bubble.acc);
-        bubble.pos = bubble.pos.add(bubble.vel);
+    static VERLET_UPDATE = (deltaTime: number, newAccelaration: Vec2D = new Vec2D()): UpdateCallback => {
+        return (bubble: Bubble): void => {
+            // Verlet integration: https://en.wikipedia.org/wiki/Verlet_integration
+            bubble.pos = bubble.pos
+                                .add(bubble.vel.mult(deltaTime))
+                                .add(bubble.acc.mult(deltaTime ** 2 * 0.5));
+            bubble.vel = bubble.vel
+                                .add(bubble.acc.add(newAccelaration).mult(deltaTime * 0.5));
+            bubble.acc = newAccelaration;
+        }
     }
 
     static CHECK_WALLS = (width: number, height: number): UpdateCallback => {
         return (bubble: Bubble): void => {
             if (bubble.pos.x - bubble.radius < 0) {
-                bubble.pos = new Vec2D(0, bubble.pos.y);
-                bubble.vel = new Vec2D(-bubble.vel.x, bubble.vel.y);
+                bubble.pos = bubble.pos.setX((x) => bubble.radius);
+                bubble.vel = bubble.vel.setX((x) => -x);
             }else if (bubble.pos.x + bubble.radius > width) {
-                bubble.pos = new Vec2D(width, bubble.pos.y);
-                bubble.vel = new Vec2D(-bubble.vel.x, bubble.vel.y);
+                bubble.pos = bubble.pos.setX((x) => width - bubble.radius);
+                bubble.vel = bubble.vel.setX((x) => -x);
             }
             if (bubble.pos.y - bubble.radius < 0) {
-                bubble.pos = new Vec2D(bubble.pos.x, 0);
-                bubble.vel = new Vec2D(bubble.vel.x, -bubble.vel.y);
+                bubble.pos = bubble.pos.setY((y) => bubble.radius);
+                bubble.vel = bubble.vel.setY((y) => -y);
             } else if (bubble.pos.y + bubble.radius > height) {
-                bubble.pos = new Vec2D(bubble.pos.x, height);
-                bubble.vel = new Vec2D(bubble.vel.x, -bubble.vel.y);
+                bubble.pos = bubble.pos.setY((y) => height - bubble.radius)
+                bubble.vel = bubble.vel.setY((y) => -y);
             }
         };
+    }
+
+    static CHECK_OVERLAP = (otherBubbles: Array<Bubble>, overlapColor: string): UpdateCallback => {
+        return (bubble: Bubble): void =>  {
+            if (bubble.overlapping) return;
+            for (const b of otherBubbles) {
+                if (b === bubble) continue;
+                if (bubble.pos.dist(b.pos) <= bubble.radius + b.radius) {
+                    bubble.overlapping = b.overlapping = true;
+                    bubble.color = b.color = overlapColor;
+                }
+            }
+        }
     }
 
     static SET_OVERLAPPING_TRUE = (bubble: Bubble): void => {
@@ -65,9 +85,14 @@ export default class Bubble {
 
     render(canvas: HTMLCanvasElement): void {
         const ctx = canvas.getContext("2d");
+        if (!ctx) {
+            console.log("Could not retrieve a \'2d\' context from ", canvas);
+            return;
+        }
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true);
+        ctx.fill();
     }
 
     isOverlapping(bubble: Bubble): boolean {
