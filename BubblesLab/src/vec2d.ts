@@ -4,11 +4,13 @@ export default class Vec2D {
     readonly x: number;
     readonly y: number;
 
-
     constructor(x: number = 0, y: number = 0) {
         this.x = x;
         this.y = y;
     }
+
+    static I = new Vec2D(1, 0);
+    static J = new Vec2D(0, 1);
 
     static from(vector: Vec2D): Vec2D {
         return new Vec2D(vector.x, vector.y);
