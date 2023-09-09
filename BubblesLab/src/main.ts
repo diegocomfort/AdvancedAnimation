@@ -26,11 +26,12 @@ function init() {
         diagonal = Math.sqrt(width ** 2 + height ** 2),
         scale = diagonal / 2202.90717008;
 
+
     for (let i = 0; i < 200; ++i) {
         const pos = new Vec2D(Math.random() * width, Math.random() * height),
             vel = new Vec2D((Math.random() - 0.5) * width / 10 * scale, (Math.random() - 0.5) * height / 10 * scale),
             radius = (Math.random() * 0.5 + 0.5) * 30 * scale;
-        game.bubbles[i] = new Bubble(radius, pos, vel);
+        game.bubbles[i] = new Bubble(radius, pos, vel, new Vec2D(), "black", "pink");
     };
     game.attractor = new Bubble(
         30,
@@ -43,7 +44,7 @@ function init() {
         Vec2D.fromAngle(Math.random() * Math.PI * 2).setMagnitude(5),
     );
 
-    game.time = Date.now();
+    console.log("Start: ", game.time = Date.now());
     animate(game);
 }
 
@@ -56,14 +57,13 @@ function animate(game: {canvas: HTMLCanvasElement; bubbles: Bubble[]; attractor:
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
     ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
 
-    game.bubbles.forEach((bubble) => {
-        bubble.update(Bubble.CHECK_WALLS(game.canvas.width, game.canvas.height));
-        bubble.update(Bubble.VERLET_UPDATE(dt));
-        bubble.update(Bubble.CHECK_OVERLAP(game.bubbles, "pink"));
+    for (const bubble of game.bubbles) {
+        bubble.update(dt);
+        bubble.checkWalls(game.canvas.width, game.canvas.height);
+        bubble.checkOverlap(game.bubbles);
         bubble.render(game.canvas);
-        bubble.update(Bubble.SET_OVERLAPPING_FALSE);
-        bubble.update(Bubble.SET_COLOR("black"));
-    });
+        bubble.resetOverlapping();
+    }
     
     requestAnimationFrame(() => animate(game));
 }

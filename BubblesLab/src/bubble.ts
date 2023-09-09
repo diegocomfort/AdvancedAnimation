@@ -1,85 +1,91 @@
 import Vec2D from "./vec2d.js";
 
-export type UpdateCallback = (bubble: Bubble) => void;
-
 export default class Bubble {
-    private radius: number;
-    private pos: Vec2D;
-    private vel: Vec2D;
-    private acc: Vec2D;
-    private overlapping: boolean = false;
-    private color: string;
-
+    private radius_: number;
+    private pos_: Vec2D;
+    private vel_: Vec2D;
+    private acc_: Vec2D;
+    private overlapping_: boolean = false;
+    private defaultColor_: string;
+    private overlapColor_: string;
+    
     constructor(radius: number,
-                pos: Vec2D = new Vec2D(), 
-                vel: Vec2D = new Vec2D(), 
-                acc: Vec2D = new Vec2D(),
-                color: string = "black") {
-        this.radius = radius;
-        this.pos = pos;
-        this.vel = vel;
-        this.acc = acc;
-        this.color = color;
+                pos: Vec2D = new Vec2D, 
+                vel: Vec2D = new Vec2D, 
+                acc: Vec2D = new Vec2D,
+                defaultColor: string = "white",
+                overlapColor: string = "pink") {
+        this.radius_ = radius;
+        this.pos_ = pos;
+        this.vel_ = vel;
+        this.acc_ = acc;
+        this.defaultColor_ = defaultColor;
+        this.overlapColor_ = overlapColor;
     }
 
-    update(updateFunction: UpdateCallback) {
-        updateFunction(this);
+    public get radius(): number {
+        return this.radius_;
     }
 
-    static VERLET_UPDATE = (deltaTime: number, newAccelaration: Vec2D = new Vec2D()): UpdateCallback => {
-        return (bubble: Bubble): void => {
-            // Verlet integration: https://en.wikipedia.org/wiki/Verlet_integration
-            bubble.pos = bubble.pos
-                                .add(bubble.vel.mult(deltaTime))
-                                .add(bubble.acc.mult(deltaTime ** 2 * 0.5));
-            bubble.vel = bubble.vel
-                                .add(bubble.acc.add(newAccelaration).mult(deltaTime * 0.5));
-            bubble.acc = newAccelaration;
+    public get pos(): Vec2D {
+        return this.pos_;
+    }
+    
+    public get vel(): Vec2D {
+        return this.vel_;
+    }
+
+    public get acc(): Vec2D {
+        return this.acc_;
+    }
+
+    public get overlapping(): boolean {
+        return this.overlapping_;
+    }
+
+    public get defaultColor(): string {
+        return this.defaultColor_;
+    }
+
+    public get overlapColor(): string {
+        return this.overlapColor_;
+    }
+
+    update(deltaTime: number, newAccelaration: Vec2D = new Vec2D): void {
+        // Verlet integration: https://en.wikipedia.org/wiki/Verlet_integration
+        this.pos_ = this.pos_
+                            .add(this.vel_.mult(deltaTime))
+                            .add(this.acc_.mult(deltaTime ** 2 * 0.5));
+        this.vel_ = this.vel_
+                            .add(this.acc_.add(newAccelaration).mult(deltaTime * 0.5));
+        this.acc_ = newAccelaration;
+    }
+
+    checkWalls(width: number, height: number): void {
+        if (this.pos_.x - this.radius_ < 0) {
+            this.pos_ = this.pos_.setX((x) => this.radius_);
+            this.vel_ = this.vel_.setX((x) => -x);
+        }else if (this.pos_.x + this.radius_ > width) {
+            this.pos_ = this.pos_.setX((x) => width - this.radius_);
+            this.vel_ = this.vel_.setX((x) => -x);
+            console.log(Date.now());
+        }
+        if (this.pos_.y - this.radius_ < 0) {
+            this.pos_ = this.pos_.setY((y) => this.radius_);
+            this.vel_ = this.vel_.setY((y) => -y);
+        } else if (this.pos_.y + this.radius_ > height) {
+            this.pos_ = this.pos_.setY((y) => height - this.radius_)
+            this.vel_ = this.vel_.setY((y) => -y);
         }
     }
 
-    static CHECK_WALLS = (width: number, height: number): UpdateCallback => {
-        return (bubble: Bubble): void => {
-            if (bubble.pos.x - bubble.radius < 0) {
-                bubble.pos = bubble.pos.setX((x) => bubble.radius);
-                bubble.vel = bubble.vel.setX((x) => -x);
-            }else if (bubble.pos.x + bubble.radius > width) {
-                bubble.pos = bubble.pos.setX((x) => width - bubble.radius);
-                bubble.vel = bubble.vel.setX((x) => -x);
+    checkOverlap(otherBubbles: Array<Bubble>): void {
+        if (this.overlapping_) return;
+        for (const b of otherBubbles) {
+            if (b === this) continue;
+            if (this.pos_.dist(b.pos_) <= this.radius_ + b.radius_) {
+                this.overlapping_ = b.overlapping_ = true;
             }
-            if (bubble.pos.y - bubble.radius < 0) {
-                bubble.pos = bubble.pos.setY((y) => bubble.radius);
-                bubble.vel = bubble.vel.setY((y) => -y);
-            } else if (bubble.pos.y + bubble.radius > height) {
-                bubble.pos = bubble.pos.setY((y) => height - bubble.radius)
-                bubble.vel = bubble.vel.setY((y) => -y);
-            }
-        };
-    }
-
-    static CHECK_OVERLAP = (otherBubbles: Array<Bubble>, overlapColor: string): UpdateCallback => {
-        return (bubble: Bubble): void =>  {
-            if (bubble.overlapping) return;
-            for (const b of otherBubbles) {
-                if (b === bubble) continue;
-                if (bubble.pos.dist(b.pos) <= bubble.radius + b.radius) {
-                    bubble.overlapping = b.overlapping = true;
-                    bubble.color = b.color = overlapColor;
-                }
-            }
-        }
-    }
-
-    static SET_OVERLAPPING_TRUE = (bubble: Bubble): void => {
-        bubble.overlapping = true;
-    }
-
-    static SET_OVERLAPPING_FALSE = (bubble: Bubble): void => {
-        bubble.overlapping = false;
-    }
-    static SET_COLOR = (color: string): UpdateCallback => {
-        return (bubble: Bubble): void => {
-            bubble.color = color;
         }
     }
 
@@ -89,13 +95,13 @@ export default class Bubble {
             console.log("Could not retrieve a \'2d\' context from ", canvas);
             return;
         }
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.overlapping_ ? this.overlapColor_ : this.defaultColor_;
         ctx.beginPath();
-        ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true);
+        ctx.arc(this.pos_.x, this.pos_.y, this.radius_, 0, Math.PI * 2, true);
         ctx.fill();
     }
 
-    isOverlapping(bubble: Bubble): boolean {
-        return this.pos.dist(bubble.pos) <= this.radius + bubble.radius;
+    resetOverlapping(): void {
+        this.overlapping_ = false;
     }
 }
