@@ -40,6 +40,10 @@ export default class Vec2D {
         return new Vec2D(this.x - vector.x, this.y - vector.y);
     }
 
+    negate(): Vec2D {
+        return new Vec2D(-this.x, -this.y);
+    }
+
     mult(scalar: number): Vec2D {
         return new Vec2D(this.x * scalar, this.y * scalar);
     }
