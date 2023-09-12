@@ -50,7 +50,7 @@ export default class Bubble {
                 this.overlapClr,
             );
         }
-
+        
         position(pos: Vec2D): Builder {
             this.pos = pos;
             return this;
@@ -106,26 +106,35 @@ export default class Bubble {
     }
 
     applyForces(attractors: Array<Bubble>, repulsers: Array<Bubble>): Vec2D {
-        let acc = new Vec2D();
-        const scale = 0.5;
+        const fricction = 0.5;
+        let acc = this.vel.negate()
+            .normalize()
+            .mult(fricction);
+        const scale = 1e+4;
 
         for (const attractor of attractors) {
             let tmp = attractor.pos
                 .sub(this.pos)
                 .normalize()
+                .mult(Math.PI * attractor.radius ** 2)
+                .div(this.pos.dist(attractor.pos) ** 2)
                 .mult(scale);
             acc = acc.add(tmp);
+            //acc = tmp
         }
 
         for (const repulser of repulsers) {
             let tmp = this.pos
                 .sub(repulser.pos)
                 .normalize()
+                // .mult(Math.PI * repulser.radius ** 2)
+                // .div(this.pos.dist(repulser.pos) ** 2)
                 .mult(scale);
             acc = acc.add(tmp);
+            //acc = tmp
         }
 
-        return acc;
+        return acc.div(Math.PI * this.radius ** 2);
     }
 
     update(deltaTime: number, newAccelaration: Vec2D = new Vec2D): void {
@@ -136,6 +145,10 @@ export default class Bubble {
         this.vel_ = this.vel_
             .add(this.acc_.add(newAccelaration).mult(deltaTime * 0.5));
         this.acc_ = newAccelaration;
+    }
+
+    limitVelocity(limit: number): void {
+        this.vel_ = this.vel_.limit(limit);
     }
 
     checkWalls(width: number, height: number): void {
