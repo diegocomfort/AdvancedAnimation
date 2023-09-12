@@ -55,6 +55,10 @@ export default class Vec2D {
     setMagnitude(newMag: number): Vec2D {
         return this.mult(newMag / this.mag());
     }
+
+    normalize(): Vec2D {
+        return this.setMagnitude(1);
+    }
     
     limit(maxMag: number): Vec2D {
         return this.mag() > maxMag ? this.setMagnitude(1): this;
