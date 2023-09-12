@@ -29,41 +29,54 @@ function init() {
 
     for (let i = 0; i < 200; ++i) {
         const pos = new Vec2D(Math.random() * width, Math.random() * height),
-            vel = new Vec2D((Math.random() - 0.5) * width / 10 * scale, (Math.random() - 0.5) * height / 10 * scale),
+            vel = Vec2D.fromAngle(Math.random() * Math.PI * 2, 5),
             radius = (Math.random() * 0.5 + 0.5) * 30 * scale;
-        game.bubbles[i] = new Bubble(radius, pos, vel, new Vec2D(), "black", "pink");
+        game.bubbles[i] = new Bubble(radius, pos, vel, new Vec2D(), "pink", "pink");
     };
-    game.attractor = new Bubble(
-        30,
-        new Vec2D(Math.random() * width, Math.random() * height),
-        Vec2D.fromAngle(Math.random() * Math.PI * 2).setMagnitude(5),
-    );
-    game.repulser = new Bubble(
-        30,
-        new Vec2D(Math.random() * width, Math.random() * height),
-        Vec2D.fromAngle(Math.random() * Math.PI * 2).setMagnitude(5),
-    );
+    game.attractor = new Bubble.Builder(100)
+        .position(new Vec2D(width / 4, height / 2))
+        .velocity(Vec2D.fromAngle(Math.random() * Math.PI * 2))
+        .defaultColor("green")
+        .overlapColor("green")
+        .build();
+    game.repulser = new Bubble.Builder(100)
+        .position(new Vec2D(3 * width / 4, height / 2))
+        .velocity(Vec2D.fromAngle(Math.random() * Math.PI * 2))
+        .defaultColor("red")
+        .overlapColor("red")
+        .build();
 
     console.log("Start: ", game.time = Date.now());
     animate(game);
 }
 
-function animate(game: {canvas: HTMLCanvasElement; bubbles: Bubble[]; attractor: Bubble; repulser: Bubble; time: number;}) {
+function animate(game: { canvas: HTMLCanvasElement; bubbles: Bubble[]; attractor: Bubble; repulser: Bubble; time: number; }) {
     const currentTime = Date.now();
     const dt = (currentTime - game.time) / 1000; // Delta time bewteen last 'frame' in seconds
     game.time = currentTime;
 
     const ctx = game.canvas.getContext("2d")!;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+    ctx.fillStyle = "rgba(255, 255, 255, 1)";
     ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
 
     for (const bubble of game.bubbles) {
-        bubble.update(dt);
+        bubble.update(dt, bubble.applyForces([game.attractor], [game.repulser]));
+        bubble.limitVelocity(5);
         bubble.checkWalls(game.canvas.width, game.canvas.height);
         bubble.checkOverlap(game.bubbles);
         bubble.render(game.canvas);
         bubble.resetOverlapping();
     }
+
+    console.log(game.bubbles[0]);
     
+    game.attractor.update(dt);
+    game.attractor.checkWalls(game.canvas.width, game.canvas.height);
+    game.attractor.render(game.canvas);
+
+    game.repulser.update(dt);
+    game.repulser.checkWalls(game.canvas.width, game.canvas.height);
+    game.repulser.render(game.canvas);
+
     requestAnimationFrame(() => animate(game));
 }
