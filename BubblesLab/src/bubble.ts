@@ -127,8 +127,8 @@ export default class Bubble {
             let tmp = this.pos
                 .sub(repulser.pos)
                 .normalize()
-                // .mult(Math.PI * repulser.radius ** 2)
-                // .div(this.pos.dist(repulser.pos) ** 2)
+                .mult(Math.PI * repulser.radius ** 2)
+                .div(this.pos.dist(repulser.pos) ** 2)
                 .mult(scale);
             acc = acc.add(tmp);
             //acc = tmp
