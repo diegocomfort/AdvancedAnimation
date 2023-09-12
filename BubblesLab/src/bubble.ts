@@ -23,7 +23,7 @@ export default class Bubble {
         this.overlapColor_ = overlapColor;
     }
 
-    public Builder = class Builder {
+    public static Builder = class Builder {
         private radius: number;
         private pos: Vec2D;
         private vel: Vec2D;
