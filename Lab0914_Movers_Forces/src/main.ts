@@ -1,4 +1,5 @@
 import { Utils } from "./utils.js"
+import Mover from "./mover.js";
 
 window.addEventListener('load', init);
 
@@ -6,6 +7,7 @@ function init() {
     const game = {
         canvas: window.document.querySelector('canvas')!,
         time: 0,
+        movers: new Array<Mover>
     };
 
     Utils.resizeCanvas(game.canvas);

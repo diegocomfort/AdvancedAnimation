@@ -1,6 +1,6 @@
 import Vec2D from "./vec2d";
 
-class Mover {
+export default class Mover {
     private position_: Vec2D;
     private velocity_: Vec2D;
     private acceleration_: Vec2D;
