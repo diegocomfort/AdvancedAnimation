@@ -1,5 +1,5 @@
-import Vec2D from "./vec2d";
-import { Utils } from "./utils";
+import Vec2D from "./vec2d.js";
+import { Utils } from "./utils.js";
 
 export default class Mover {
     private position_: Vec2D;
@@ -56,7 +56,6 @@ export default class Mover {
         } else if (this.position_.x + this.radius_ > width) {
             this.position_ = this.position_.setX((x) => width - this.radius_);
             this.velocity_ = this.velocity_.setX((x) => -x);
-            console.log(Date.now());
         }
         if (this.position_.y - this.radius_ < 0) {
             this.position_ = this.position_.setY((y) => this.radius_);
