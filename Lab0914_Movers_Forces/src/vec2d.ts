@@ -65,7 +65,7 @@ export default class Vec2D {
     }
     
     limit(maxMag: number): Vec2D {
-        return this.mag() > maxMag ? this.setMagnitude(1): this;
+        return this.mag() > maxMag ? this.setMagnitude(maxMag): this;
     }
 
     div(scalar: number): Vec2D {
