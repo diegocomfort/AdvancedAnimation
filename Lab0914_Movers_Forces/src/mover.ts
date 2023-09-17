@@ -1,4 +1,5 @@
 import Vec2D from "./vec2d";
+import { Utils } from "./utils";
 
 export default class Mover {
     private position_: Vec2D;
@@ -26,7 +27,7 @@ export default class Mover {
         return 2 * Math.PI * this.radius_;
     }
 
-    constructor(options: {position?: Vec2D, velocity?: Vec2D, acceleration?: Vec2D, radius: number}) {
+    constructor(options: { position?: Vec2D, velocity?: Vec2D, acceleration?: Vec2D, radius: number }) {
         this.position_ = options.position ?? new Vec2D;
         this.velocity_ = options.velocity ?? new Vec2D;
         this.acceleration_ = options.acceleration ?? new Vec2D;
@@ -43,7 +44,12 @@ export default class Mover {
         this.acceleration_ = newAcceleration;
     }
 
-    public checkWalls(width: number, height: number): void {
+    public checkWalls(width: number, height: number, bounce: boolean = true): void {
+        if (!bounce) {
+            this.position_ = this.position_.setX((x) => Utils.mod(x, width))
+                                           .setY((y) => Utils.mod(y, height));
+            return;
+        }
         if (this.position_.x - this.radius_ < 0) {
             this.position_ = this.position_.setX((x) => this.radius_);
             this.velocity_ = this.velocity_.setX((x) => -x);
