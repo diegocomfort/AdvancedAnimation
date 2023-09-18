@@ -6,6 +6,7 @@ export default class Mover {
     private velocity_: Vec2D;
     private acceleration_: Vec2D;
     private radius_: number;
+    private hasCollided = false;
 
     public get position(): Vec2D {
         return this.position_;
@@ -44,6 +45,26 @@ export default class Mover {
         this.acceleration_ = newAcceleration;
     }
 
+    public applyForces(otherMovers: Array<Mover>): Vec2D {
+        let acc = new Vec2D;
+        const G = 6.67430e+2 / 2;
+        for (const mover of otherMovers) {
+            if (this === mover) continue;
+            acc = acc.add( 
+                mover.position_
+                .sub(this.position_)
+                .normalize()
+                .mult(G * mover.mass * this.mass)
+                .div(this.position_.dist(mover.position_) ** 2));
+        }
+
+        acc = acc.add(
+            this.velocity_.negate().normalize().mult(this.velocity_.mag() / 5)
+        );
+
+        return acc.div(this.mass);
+    }
+
     public checkWalls(width: number, height: number, bounce: boolean = true): void {
         if (!bounce) {
             this.position_ = this.position_.setX((x) => Utils.mod(x, width))
@@ -66,6 +87,43 @@ export default class Mover {
         }
     }
 
+    public checkMovers(otherMovers: Array<Mover>): void {
+        if (this.hasCollided) return;
+        for (const mover of otherMovers) {
+            if (this === mover) continue;
+            if (this.position_.dist(mover.position_) <= this.radius_ + mover.radius_) {
+                this.hasCollided = mover.hasCollided = true;
+
+                //https://www.geeksforgeeks.org/elastic-collision-formula/
+                const v1i = this.velocity_;
+                const v2i = mover.velocity_;
+                this.velocity_ = v1i
+                    .mult(this.mass - mover.mass)
+                    .add(v2i.mult(2 * mover.mass))
+                    .div(this.mass + mover.mass);
+                mover.velocity_ = v2i
+                    .mult(mover.mass - this.mass)
+                    .add(v1i.mult(2 * this.mass))
+                    .div(this.mass + mover.mass);
+
+                const avgPos = this.position_.add(mover.position_).div(2);
+
+                if (this.velocity_.magSq() > mover.velocity_.magSq())
+                    this.position_ = this.position_
+                        .sub(mover.position_)
+                        .setMagnitude(this.radius_ + mover.radius_)
+                        .add(mover.position_);
+                else 
+                    mover.position_ = mover.position_
+                        .sub(this.position_)
+                        .setMagnitude(this.radius_ + mover.radius_)
+                        .add(this.position_);
+
+                return;
+            }
+        }
+    }
+
     public limitVelocity(maxMagnitude: number): void {
         this.velocity_ = this.velocity_.limit(maxMagnitude);
     }
@@ -81,6 +139,9 @@ export default class Mover {
         ctx.beginPath();
         ctx.arc(this.position_.x, this.position_.y, this.radius_, 0, 2 * Math.PI);
         ctx.fill();
+
+        this.hasCollided = false;
+
         return true;
     }
 }
