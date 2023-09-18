@@ -62,8 +62,8 @@ function animate(game: {
             ? game.gravitor.position.sub(mover.position)
             : mover.position.sub(game.gravitor.position))
             .normalize()
-            .mult(game.gravitor.mass)
-            .div(10);
+            .mult(game.gravitor.mass * 10)
+            .div(mover.position.dist(game.gravitor.position));
         mover.update(dt, newAcc);
         mover.limitVelocity(50);
         mover.checkWalls(game.canvas.width, game.canvas.height);
