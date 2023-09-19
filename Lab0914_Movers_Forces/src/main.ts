@@ -16,11 +16,11 @@ function init() {
 
     Utils.resizeCanvas(game.canvas);
 
-    for (let i = 0; i < 100; ++i) {
+    for (let i = 0; i < 250; ++i) {
         game.movers.push(new Mover({
-            radius: Math.random() ** 10 * 75 + 5,
+            radius: Math.random() ** 15 * 145 + 5,
             position: new Vec2D(game.canvas.width * Math.random(), game.canvas.height * Math.random()),
-            velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 30 + 30)
+            velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 75 + 75)
         }))
     }
 
@@ -46,10 +46,13 @@ function animate(game: {
     for (const mover of game.movers) {
 
         let acc = mover.applyForces(game.movers);
-        if (game.gravity === 1)                // Gravity
-            acc = Vec2D.J.mult(9.80665e+1);
+        if (game.gravity === 1) {               // Gravity
+            acc = acc.add(Vec2D.J.mult(
+                9.80665e+1 * 6.67430e+1 * mover.mass / (game.canvas.height - mover.position.y)
+            ));
+        }
         if (game.gravity === 2)                // Wind
-            acc = Vec2D.I.mult(9.80665e+1);
+            acc = acc.add(Vec2D.I.mult(9.80665e+1));
 
         mover.update(dt, acc);
         if (game.gravity !== 1)
