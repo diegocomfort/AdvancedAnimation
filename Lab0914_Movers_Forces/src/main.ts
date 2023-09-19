@@ -60,9 +60,6 @@ function animate(game: {
         mover.checkWalls(game.canvas.width, game.canvas.height, game.gravity == 2 ? false: true);
         mover.checkMovers(game.movers);
         mover.render(game.canvas);
-
-        if (mover === game.movers[0])
-            console.log(mover.velocity)
     }
 
     requestAnimationFrame(() => animate(game));
