@@ -59,7 +59,7 @@ export default class Mover {
         }
 
         acc = acc.add(
-            this.velocity_.negate().setMagnitude(this.velocity_.mag() / 5)
+            this.velocity_.negate().setMagnitude(this.mass / 25)
         );
 
         return acc.div(this.mass);
@@ -95,17 +95,18 @@ export default class Mover {
                 this.hasCollided = mover.hasCollided = true;
 
                 //https://www.geeksforgeeks.org/elastic-collision-formula/
-                const v1i = this.velocity_;
-                const v2i = mover.velocity_;
-                this.velocity_ = mover.position_
+                const v1i = mover.position_
                     .sub(this.position_)
-                    .setMagnitude(this.velocity_.mag())
+                    .setMagnitude(this.velocity_.mag());
+                const v2i = this.position_
+                    .sub(mover.position_)
+                    .setMagnitude(mover.velocity_.mag());
+                
+                this.velocity_ = v1i
                     .mult(this.mass - mover.mass)
                     .add(v2i.mult(2 * mover.mass))
                     .div(this.mass + mover.mass);
-                mover.velocity_ = this.position_
-                    .sub(mover.position_)
-                    .setMagnitude(mover.velocity_.mag())
+                mover.velocity_ = v2i
                     .mult(mover.mass - this.mass)
                     .add(v1i.mult(2 * this.mass))
                     .div(this.mass + mover.mass);
