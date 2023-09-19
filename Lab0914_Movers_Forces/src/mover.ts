@@ -53,13 +53,13 @@ export default class Mover {
             acc = acc.add(
                 mover.position_
                     .sub(this.position_)
-                    .normalize()
-                    .mult(G * mover.mass * this.mass)
-                    .div(this.position_.dist(mover.position_) ** 2));
+                    .setMagnitude(
+                        (G * mover.mass * this.mass) /
+                        (this.position_.dist(mover.position_) ** 2)));
         }
 
         acc = acc.add(
-            this.velocity_.negate().normalize().mult(this.velocity_.mag() / 5)
+            this.velocity_.negate().setMagnitude(this.velocity_.mag() / 5)
         );
 
         return acc.div(this.mass);
@@ -68,7 +68,7 @@ export default class Mover {
     public checkWalls(width: number, height: number, bounce: boolean = true): void {
         if (!bounce) {
             this.position_ = this.position_.setX((x) => Utils.mod(x, width))
-                .setY((y) => Utils.mod(y, height));
+                                           .setY((y) => Utils.mod(y, height));
             return;
         }
         if (this.position_.x - this.radius_ < 0) {
