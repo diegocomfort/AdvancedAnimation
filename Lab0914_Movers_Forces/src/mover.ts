@@ -50,12 +50,12 @@ export default class Mover {
         const G = 6.67430e+2 / 2;
         for (const mover of otherMovers) {
             if (this === mover) continue;
-            acc = acc.add( 
+            acc = acc.add(
                 mover.position_
-                .sub(this.position_)
-                .normalize()
-                .mult(G * mover.mass * this.mass)
-                .div(this.position_.dist(mover.position_) ** 2));
+                    .sub(this.position_)
+                    .normalize()
+                    .mult(G * mover.mass * this.mass)
+                    .div(this.position_.dist(mover.position_) ** 2));
         }
 
         acc = acc.add(
@@ -68,7 +68,7 @@ export default class Mover {
     public checkWalls(width: number, height: number, bounce: boolean = true): void {
         if (!bounce) {
             this.position_ = this.position_.setX((x) => Utils.mod(x, width))
-                                           .setY((y) => Utils.mod(y, height));
+                .setY((y) => Utils.mod(y, height));
             return;
         }
         if (this.position_.x - this.radius_ < 0) {
@@ -97,23 +97,28 @@ export default class Mover {
                 //https://www.geeksforgeeks.org/elastic-collision-formula/
                 const v1i = this.velocity_;
                 const v2i = mover.velocity_;
-                this.velocity_ = v1i
+                this.velocity_ = mover.position_
+                    .sub(this.position_)
+                    .setMagnitude(this.velocity_.mag())
                     .mult(this.mass - mover.mass)
                     .add(v2i.mult(2 * mover.mass))
                     .div(this.mass + mover.mass);
-                mover.velocity_ = v2i
+                mover.velocity_ = this.position_
+                    .sub(mover.position_)
+                    .setMagnitude(mover.velocity_.mag())
                     .mult(mover.mass - this.mass)
                     .add(v1i.mult(2 * this.mass))
                     .div(this.mass + mover.mass);
 
                 const avgPos = this.position_.add(mover.position_).div(2);
 
+                // Make the fastest one move so they don't overlap
                 if (this.velocity_.magSq() > mover.velocity_.magSq())
                     this.position_ = this.position_
                         .sub(mover.position_)
                         .setMagnitude(this.radius_ + mover.radius_)
                         .add(mover.position_);
-                else 
+                else
                     mover.position_ = mover.position_
                         .sub(this.position_)
                         .setMagnitude(this.radius_ + mover.radius_)
