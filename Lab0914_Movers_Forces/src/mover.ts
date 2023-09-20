@@ -47,7 +47,7 @@ export default class Mover {
 
     public applyForces(otherMovers: Array<Mover>): Vec2D {
         let acc = new Vec2D;
-        const G = 6.67430e+2 / 2;
+        const G = 6.67430e+2 / 5;
         for (const mover of otherMovers) {
             if (this === mover) continue;
             acc = acc.add(

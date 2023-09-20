@@ -18,7 +18,7 @@ function init() {
 
     for (let i = 0; i < 250; ++i) {
         game.movers.push(new Mover({
-            radius: Math.random() ** 15 * 145 + 5,
+            radius: Math.random() ** 15 * 95 + 5,
             position: new Vec2D(game.canvas.width * Math.random(), game.canvas.height * Math.random()),
             velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 75 + 75)
         }))
