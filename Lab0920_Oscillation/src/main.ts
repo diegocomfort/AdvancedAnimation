@@ -1,6 +1,6 @@
 import { Utils } from "./utils.js";
 import Mover from "./mover.js";
-import BinaryCelestialSystem from "./orbiter.js";
+import BinaryCelestialSystem from "./system.js";
 import Vec2D from "./vec2d.js";
 
 window.addEventListener("load", init);
@@ -16,11 +16,13 @@ function init() {
 
     const parent = new Mover({
         radius: 150,
+        mass: 1e+15,
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
     });
 
     game.system = new BinaryCelestialSystem(parent, {
-        distance: 200
+        distance: 200,
+        mass: 1,
     });
 
     game.time = Date.now();
