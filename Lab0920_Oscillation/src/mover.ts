@@ -6,6 +6,7 @@ export default class Mover {
     private velocity_: Vec2D;
     private acceleration_: Vec2D;
     private radius_: number;
+    private mass_: number
 
     public get position(): Vec2D {
         return this.position_;
@@ -24,7 +25,7 @@ export default class Mover {
     }
 
     public get mass(): number {
-        return 2 * Math.PI * this.radius_;
+        return this.mass_;
     }
 
     constructor(options: {
@@ -32,11 +33,13 @@ export default class Mover {
         velocity?: Vec2D;
         acceleration?: Vec2D;
         radius: number;
+        mass?: number
     }) {
         this.position_ = options.position ?? new Vec2D();
         this.velocity_ = options.velocity ?? new Vec2D();
         this.acceleration_ = options.acceleration ?? new Vec2D();
         this.radius_ = options.radius;
+        this.mass_ = options.mass ?? Math.PI * this.radius_ ** 2;
     }
 
     public update(
