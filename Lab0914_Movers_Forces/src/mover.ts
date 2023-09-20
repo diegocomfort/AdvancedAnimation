@@ -134,6 +134,8 @@ export default class Mover {
         this.velocity_ = this.velocity_.limit(maxMagnitude);
     }
 
+    //public limit
+
     public render(canvas: HTMLCanvasElement, color: string = "black"): boolean {
         const ctx = canvas.getContext("2d");
         if (!ctx) {

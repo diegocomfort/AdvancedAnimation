@@ -48,7 +48,7 @@ function animate(game: {
         let acc = mover.applyForces(game.movers);
         if (game.gravity === 1) {               // Gravity
             acc = acc.add(Vec2D.J.mult(
-                9.80665e+1 * 6.67430e+1 * mover.mass / (game.canvas.height - mover.position.y)
+                9.80665e+2 * 6.67430e+1 * mover.mass / (game.canvas.height - mover.position.y) ** 2
             ));
         }
         if (game.gravity === 2)                // Wind
