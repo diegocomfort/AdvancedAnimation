@@ -15,14 +15,15 @@ function init() {
     Utils.resizeCanvas(game.canvas);
 
     const parent = new Mover({
-        radius: 150,
-        mass: 1e+15,
+        radius: 100,
+        mass: 1e+16,
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
     });
 
     game.system = new BinaryCelestialSystem(parent, {
         distance: 200,
-        mass: 1,
+        mass: 1e+3,
+        amount: 10,
     });
 
     game.time = Date.now();
@@ -35,7 +36,7 @@ function animate(game: {
     system: BinaryCelestialSystem;
 }) {
     const currentTime = Date.now();
-    const dt = (currentTime - game.time) / 1000; // Delta time bewteen last 'frame' in seconds
+    const dt = (currentTime - game.time) * 1e-3; // Delta time bewteen last 'frame' in seconds
     game.time = currentTime;
 
     const ctx = game.canvas.getContext("2d")!;
