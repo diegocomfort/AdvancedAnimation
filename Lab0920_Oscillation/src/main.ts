@@ -1,6 +1,6 @@
 import { Utils } from "./utils.js";
 import Mover from "./mover.js";
-import BinaryCelestialSystem from "./system.js";
+import CelestialSystem from "./system.js";
 import Vec2D from "./vec2d.js";
 
 window.addEventListener("load", init);
@@ -9,7 +9,7 @@ function init() {
     const game = {
         canvas: window.document.querySelector("canvas")!,
         time: 0,
-        system: new BinaryCelestialSystem(new Mover({ radius: 0 }), {}),
+        system: new CelestialSystem(new Mover({ radius: 0 }), {}),
     };
 
     Utils.resizeCanvas(game.canvas);
@@ -20,7 +20,7 @@ function init() {
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
     });
 
-    game.system = new BinaryCelestialSystem(parent, {
+    game.system = new CelestialSystem(parent, {
         distance: 200,
         mass: 1e+3,
         amount: 10,
@@ -33,7 +33,7 @@ function init() {
 function animate(game: {
     canvas: HTMLCanvasElement;
     time: number;
-    system: BinaryCelestialSystem;
+    system: CelestialSystem;
 }) {
     const currentTime = Date.now();
     const dt = (currentTime - game.time) * 1e-3; // Delta time bewteen last 'frame' in seconds

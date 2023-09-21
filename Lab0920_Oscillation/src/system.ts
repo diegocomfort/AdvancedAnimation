@@ -1,7 +1,7 @@
 import Mover from "./mover.js";
 import Vec2D from "./vec2d.js";
 
-export default class BinaryCelestialSystem {
+export default class CelestialSystem {
     private parent_: Mover;
     private satellites_: Mover[];
 
