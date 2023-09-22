@@ -29,26 +29,67 @@ export default class CelestialSystem {
 
             const theta = (i * TAU) / amount;
 
-            const pos = this.parent_.position.add(Vec2D.fromAngle(theta, distance));
-            const vel = Vec2D.fromAngle(theta + Math.PI / 2, speed);
+            const pos = this.parent_.position.add(
+                Vec2D.fromAngle(theta, distance)
+            );
+            const vel = Vec2D.fromAngle(theta + Math.PI / 2, speed).add(
+                parent.velocity
+            );
 
             this.satellites_[i] = new Mover({
                 radius: radius,
                 position: pos,
                 velocity: vel,
+                acceleration: parent.acceleration,
             });
         }
     }
 
-    public update(deltaTime: number): void {
+    public update(deltaTime: number, otherMovers?: Mover[], otherForces?: Vec2D[]): void {
         this.parent_.update(deltaTime);
         for (const satellite of this.satellites_) {
-            satellite.update(deltaTime, satellite.applyForces([this.parent_]));
+            const movers = [this.parent_, ...this.satellites_];
+            if (otherMovers) movers.push(...otherMovers);
+
+            const forces: Vec2D[] = [];
+            if (otherForces) forces.push(...otherForces)
+
+            satellite.update(deltaTime, satellite.applyForces(movers, forces    ));
         }
     }
 
-    public render(canvas: HTMLCanvasElement): void {
-        this.parent_.render(canvas);
-        for (const satellite of this.satellites_) satellite.render(canvas);
+    public render(
+        canvas: HTMLCanvasElement,
+        colors?: {
+            parent?: string | (() => string);
+            satellites?: (theta: number, index: number) => string;
+        }
+    ): void {
+        const parentCLR = colors
+            ? colors.parent
+                ? typeof colors.parent == "string"
+                    ? colors.parent
+                    : colors.parent()
+                : "black"
+            : "black";
+
+        this.parent_.render(canvas, parentCLR);
+        for (let i = 0; i < this.satellites_.length; ++i) {
+            const satellite = this.satellites_[i];
+            const clr = colors
+                ? colors.satellites
+                    ? typeof colors.satellites == "string"
+                        ? colors.satellites
+                        : colors.satellites(
+                              satellite.position
+                                  .sub(this.parent_.position)
+                                  .angle(),
+                              i
+                          )
+                    : "black"
+                : "black";
+
+            satellite.render(canvas, clr);
+        }
     }
 }
