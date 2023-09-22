@@ -18,12 +18,14 @@ function init() {
         radius: 100,
         mass: 1e+16,
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
+        velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 100),
+        acceleration: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 150),
     });
 
     game.system = new CelestialSystem(parent, {
         distance: 200,
         mass: 1e+3,
-        amount: 10,
+        amount: 20,
     });
 
     game.time = Date.now();
@@ -40,11 +42,15 @@ function animate(game: {
     game.time = currentTime;
 
     const ctx = game.canvas.getContext("2d")!;
-    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.025)";
     ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
 
-    game.system.update(dt);
-    game.system.render(game.canvas);
+    const n = 10;
+    for (let i = 0; i < n; ++i)
+        game.system.update(dt / n);
+    game.system.render(game.canvas, {
+        satellites: (a, i) => `hsl(${a * 180 / Math.PI}, 100%,  50%)`
+    });
 
     requestAnimationFrame(() => animate(game));
 }
