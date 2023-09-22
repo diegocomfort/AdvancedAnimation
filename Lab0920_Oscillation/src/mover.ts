@@ -120,8 +120,8 @@ export default class Mover {
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(
-            this.position_.x,
-            this.position_.y,
+            Utils.mod(this.position_.x, canvas.width),
+            Utils.mod(this.position_.y, canvas.height),
             this.radius_,
             0,
             2 * Math.PI
