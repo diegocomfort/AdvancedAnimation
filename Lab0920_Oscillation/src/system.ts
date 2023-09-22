@@ -11,12 +11,12 @@ export default class CelestialSystem {
             amount?: number;
             radius?: number;
             mass?: number;
-            distance?: number;
+            orbitalRadius?: number;
         }
     ) {
         const amount = satellites.amount ?? 4;
         const radius = satellites.radius ?? 20;
-        const distance = satellites.distance ?? 100;
+        const orbitalRadius = satellites.orbitalRadius ?? 100;
         const mass = satellites.mass ?? Math.PI * radius ** 2;
 
         this.parent_ = parent;
@@ -25,24 +25,29 @@ export default class CelestialSystem {
             const G = 6.6743e-11;
             const TAU = Math.PI * 2;
 
-            const speed = Math.sqrt((G * parent.mass) / distance);
+            const speed = Math.sqrt((G * parent.mass) / orbitalRadius);
 
             const theta = (i * TAU) / amount;
 
             const pos = this.parent_.position.add(
-                Vec2D.fromAngle(theta, distance)
+                Vec2D.fromAngle(theta, orbitalRadius)
             );
             const vel = Vec2D.fromAngle(theta + Math.PI / 2, speed).add(
                 parent.velocity
             );
 
             this.satellites_[i] = new Mover({
+                mass: mass,
                 radius: radius,
                 position: pos,
                 velocity: vel,
                 acceleration: parent.acceleration,
             });
         }
+    }
+
+    public get numSatellites(): number {
+        return this.satellites_.length;
     }
 
     public update(deltaTime: number, otherMovers?: Mover[], otherForces?: Vec2D[]): void {

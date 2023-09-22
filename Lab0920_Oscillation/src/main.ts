@@ -23,9 +23,10 @@ function init() {
     });
 
     game.system = new CelestialSystem(parent, {
-        distance: 200,
+        orbitalRadius: 200,
         mass: 1e+3,
-        amount: 20,
+        amount: 50,
+        radius: 5,
     });
 
     game.time = Date.now();
@@ -49,7 +50,8 @@ function animate(game: {
     for (let i = 0; i < n; ++i)
         game.system.update(dt / n);
     game.system.render(game.canvas, {
-        satellites: (a, i) => `hsl(${a * 180 / Math.PI}, 100%,  50%)`
+        // satellites: (a, i) => `hsl(${a * 180 / Math.PI}, 100%,  50%)`
+        satellites: (a, i) => `hsl(${i * 360 / game.system.numSatellites}, 100%,  50%)`
     });
 
     requestAnimationFrame(() => animate(game));
