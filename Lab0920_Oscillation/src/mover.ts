@@ -6,7 +6,7 @@ export default class Mover {
     private velocity_: Vec2D;
     private acceleration_: Vec2D;
     private radius_: number;
-    private mass_: number
+    private mass_: number;
 
     public get position(): Vec2D {
         return this.position_;
@@ -33,7 +33,7 @@ export default class Mover {
         velocity?: Vec2D;
         acceleration?: Vec2D;
         radius: number;
-        mass?: number
+        mass?: number;
     }) {
         this.position_ = options.position ?? new Vec2D();
         this.velocity_ = options.velocity ?? new Vec2D();
@@ -56,22 +56,27 @@ export default class Mover {
         this.acceleration_ = newAcceleration;
     }
 
-    public applyForces(movers: Mover[]): Vec2D {
+    public applyForces(movers: Mover[], forces?: Vec2D[]): Vec2D {
         const G = 6.6743e-11;
 
-        let acc = new Vec2D();
+        // Force
+        let f = new Vec2D();
         for (const mover of movers) {
-            acc = acc.add(
-                mover.position_
-                    .sub(this.position_)
-                    .setMagnitude(
-                        (G * mover.mass * this.mass) /
-                            this.position_.dist(mover.position_) ** 2
-                    )
-            );
+            if (this !== mover)
+                f = f.add(
+                    mover.position_
+                        .sub(this.position_)
+                        .setMagnitude(
+                            (G * mover.mass * this.mass) /
+                                this.position_.dist(mover.position_) ** 2
+                        )
+                );
         }
 
-        return acc.div(this.mass);
+        if (forces) for (const force of forces) f = f.add(force);
+
+        // F = ma -> a = F/m
+        return f.div(this.mass);
     }
 
     public checkWalls(
