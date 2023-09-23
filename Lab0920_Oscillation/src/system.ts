@@ -50,16 +50,23 @@ export default class CelestialSystem {
         return this.satellites_.length;
     }
 
-    public update(deltaTime: number, otherMovers?: Mover[], otherForces?: Vec2D[]): void {
-        this.parent_.update(deltaTime);
+    public update(
+        deltaTime: number,
+        otherMovers?: Mover[],
+        otherForces?: Vec2D[]
+    ): void {
+        const movers = [this.parent_, ...this.satellites_];
+        if (otherMovers) movers.push(...otherMovers);
+
+        const forces: Vec2D[] = [];
+        if (otherForces) forces.push(...otherForces);
+
+        this.parent_.update(
+            deltaTime,
+            this.parent_.applyForces(movers, forces)
+        );
         for (const satellite of this.satellites_) {
-            const movers = [this.parent_, ...this.satellites_];
-            if (otherMovers) movers.push(...otherMovers);
-
-            const forces: Vec2D[] = [];
-            if (otherForces) forces.push(...otherForces)
-
-            satellite.update(deltaTime, satellite.applyForces(movers, forces    ));
+            satellite.update(deltaTime, satellite.applyForces(movers, forces));
         }
     }
 

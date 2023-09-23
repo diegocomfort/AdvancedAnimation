@@ -110,22 +110,29 @@ export default class Mover {
         this.velocity_ = this.velocity_.limit(maxMagnitude);
     }
 
-    public render(canvas: HTMLCanvasElement, color: string = "black"): boolean {
+    public render(
+        canvas: HTMLCanvasElement,
+        color: string = "black",
+        modulus: boolean = false
+    ): boolean {
         const ctx = canvas.getContext("2d");
         if (!ctx) {
             console.log('Could get a "2d" context from ', canvas);
             return false;
         }
 
+        const x = (modulus ? Utils.mod : (x: any, y: any) => x)(
+            this.position_.x,
+            canvas.width
+        );
+        const y = (modulus ? Utils.mod : (x: any, y: any) => x)(
+            this.position_.y,
+            canvas.height
+        );
+
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(
-            Utils.mod(this.position_.x, canvas.width),
-            Utils.mod(this.position_.y, canvas.height),
-            this.radius_,
-            0,
-            2 * Math.PI
-        );
+        ctx.arc(x, y, this.radius_, 0, 2 * Math.PI);
         ctx.fill();
 
         return true;

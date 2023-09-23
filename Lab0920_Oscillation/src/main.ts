@@ -16,20 +16,20 @@ function init() {
 
     const parent = new Mover({
         radius: 100,
-        mass: 1e+16,
+        mass: 4e+16,
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
         velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 100),
-        acceleration: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 150),
     });
 
     game.system = new CelestialSystem(parent, {
-        orbitalRadius: 200,
-        mass: 1e+3,
-        amount: 50,
-        radius: 5,
+        orbitalRadius: 150,
+        mass: 1e+5,
+        amount: 10,
+        radius: 30,
     });
 
     game.time = Date.now();
+    console.log(game);
     animate(game);
 }
 
@@ -50,8 +50,8 @@ function animate(game: {
     for (let i = 0; i < n; ++i)
         game.system.update(dt / n);
     game.system.render(game.canvas, {
-        // satellites: (a, i) => `hsl(${a * 180 / Math.PI}, 100%,  50%)`
-        satellites: (a, i) => `hsl(${i * 360 / game.system.numSatellites}, 100%,  50%)`
+        satellites: (a, i) => `hsl(${a * 180 / Math.PI}, 100%,  50%)`
+        //satellites: (a, i) => `hsl(${i * 360 / game.system.numSatellites}, 100%,  50%)`
     });
 
     requestAnimationFrame(() => animate(game));
