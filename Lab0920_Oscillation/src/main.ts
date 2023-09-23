@@ -15,17 +15,17 @@ function init() {
     Utils.resizeCanvas(game.canvas);
 
     const parent = new Mover({
-        radius: 100,
+        radius: 30,
         mass: 4e+16,
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
-        velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 100),
+        //velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 100),
     });
 
     game.system = new CelestialSystem(parent, {
         orbitalRadius: 150,
         mass: 1e+5,
-        amount: 10,
-        radius: 30,
+        amount: 1,
+        radius: 5,
     });
 
     game.time = Date.now();
