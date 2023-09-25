@@ -15,7 +15,7 @@ function init() {
     Utils.resizeCanvas(game.canvas);
 
     const parent = new Mover({
-        radius: 30,
+        radius: 50,
         mass: 4e16,
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
         //velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 100),
@@ -23,14 +23,15 @@ function init() {
 
     game.system = new System(parent);
 
-    for (let i = 0; i < 5; ++i) {
+    for (let i = 0; i < 10; ++i) {
         game.system.addSatellite({
             amount: 1,
             radius: Math.random() * 15 + 5,
             mass: 3e10,
             initialAngle: Math.random() * 2 * Math.PI,
-            orbitalRadius: Math.random() * 50 + 100,
+            orbitalRadius: Math.random() * 300 + 100,
             eccentricity: Math.random() * 0.9,
+            direction: Math.random() > 0.5 ? "clockwise" : "counterclockwise",
         });
     }
 

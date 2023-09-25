@@ -13,6 +13,7 @@ export default class System {
             mass?: number;
             orbitalRadius?: number;
             eccentricity?: number;
+            direction?: "clockwise" | "counterclockwise";
         }
     ) {
         this.parent_ = parent;
@@ -24,6 +25,11 @@ export default class System {
             const orbitalRadius = satellites.orbitalRadius ?? 100;
             const mass = satellites.mass ?? Math.PI * radius ** 2;
             const eccentricity = satellites.eccentricity ?? 0;
+            const direction = satellites.direction
+                ? satellites.direction == "clockwise"
+                    ? -1
+                    : 1
+                : 1;
 
             for (let i = 0; i < amount; ++i) {
                 const G = 6.6743e-11;
@@ -42,9 +48,10 @@ export default class System {
                 const pos = this.parent_.position.add(
                     Vec2D.fromAngle(theta, orbitalRadius)
                 );
-                const vel = Vec2D.fromAngle(theta + Math.PI / 2, speed).add(
-                    parent.velocity
-                );
+                const vel = Vec2D.fromAngle(
+                    theta + (direction * Math.PI) / 2,
+                    speed
+                ).add(parent.velocity);
 
                 this.satellites_.push(
                     new Mover({
@@ -66,6 +73,7 @@ export default class System {
         initialAngle?: number;
         orbitalRadius?: number;
         eccentricity?: number;
+        direction?: "clockwise" | "counterclockwise";
     }): void {
         const amount = satellites.amount ?? 4;
         const radius = satellites.radius ?? 20;
@@ -73,6 +81,11 @@ export default class System {
         const mass = satellites.mass ?? Math.PI * radius ** 2;
         const eccentricity = satellites.eccentricity ?? 0;
         const initialAngle = satellites.initialAngle ?? 0;
+        const direction = satellites.direction
+            ? satellites.direction == "clockwise"
+                ? -1
+                : 1
+            : 1;
 
         for (let i = 0; i < amount; ++i) {
             const G = 6.6743e-11;
@@ -91,9 +104,10 @@ export default class System {
             const pos = this.parent_.position.add(
                 Vec2D.fromAngle(theta, orbitalRadius)
             );
-            const vel = Vec2D.fromAngle(theta + Math.PI / 2, speed).add(
-                this.parent_.velocity
-            );
+            const vel = Vec2D.fromAngle(
+                theta + (direction * Math.PI) / 2,
+                speed
+            ).add(this.parent_.velocity);
 
             this.satellites_.push(
                 new Mover({
