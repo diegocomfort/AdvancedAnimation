@@ -59,6 +59,8 @@ function animate(game: {
     }
 
     for (const mover of game.system) {
+        mover.checkWalls(game.canvas.width, game.canvas.height);
+        mover.checkMovers(game.system);
         mover.render(game.canvas);
     }
 

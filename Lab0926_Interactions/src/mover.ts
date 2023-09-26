@@ -135,6 +135,30 @@ export default class Mover {
         }
     }
 
+    public checkMovers(movers: Mover[]) {
+        for (const mover of movers) {
+            if (this === mover) continue;
+
+            const r =
+                (this.orbiters[0]
+                    ? this.orbiters[0].orbtialRadius
+                    : 2 * this.radius_) +
+                (mover.orbiters[0]
+                    ? mover.orbiters[0].orbtialRadius
+                    : 2 * mover.radius_);
+
+            if (this.position_.dist(mover.position_) <= r) {
+                this.connections.push(mover);
+            }
+
+            if (this.connections.indexOf(mover) >= 0) {
+                mover.position_ = mover.position_
+                    .sub(this.position_)
+                    .setMagnitude(r).add(this.position_);
+            }
+        }
+    }
+
     public limitVelocity(maxMagnitude: number): void {
         this.velocity_ = this.velocity_.limit(maxMagnitude);
     }

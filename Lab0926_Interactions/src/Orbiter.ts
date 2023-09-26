@@ -5,8 +5,12 @@ export default class Orbiter {
     private parent: Mover;
     private angle: number;
     private angularVelocity: number;
-    private orbtialRadius;
+    private orbtialRadius_;
     private radius;
+
+    public get orbtialRadius(): number {
+        return this.orbtialRadius_;
+    }
 
     constructor(
         parent: Mover,
@@ -19,7 +23,7 @@ export default class Orbiter {
         this.angle = initialAngle;
         this.angularVelocity = angularVelocity;
         this.radius = radius;
-        this.orbtialRadius = orbtialRadius;
+        this.orbtialRadius_ = orbtialRadius;
     }
 
     public update(deltaTime: number): void {
@@ -30,7 +34,7 @@ export default class Orbiter {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const pos = Vec2D.fromAngle(this.angle, this.orbtialRadius).add(this.parent.position);
+        const pos = Vec2D.fromAngle(this.angle, this.orbtialRadius_).add(this.parent.position);
 
         ctx.fillStyle = color ?? "black";
         ctx.beginPath();
