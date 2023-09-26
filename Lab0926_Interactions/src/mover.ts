@@ -1,5 +1,6 @@
 import Vec2D from "./vec2d.js";
 import { Utils } from "./utils.js";
+import Orbiter from "./Orbiter.js";
 
 export default class Mover {
     private position_: Vec2D;
@@ -7,6 +8,8 @@ export default class Mover {
     private acceleration_: Vec2D;
     private radius_: number;
     private mass_: number;
+    private connections: Mover[] = [];
+    private orbiters: Orbiter[] = [];
 
     public get position(): Vec2D {
         return this.position_;
@@ -34,12 +37,34 @@ export default class Mover {
         acceleration?: Vec2D;
         radius: number;
         mass?: number;
+        orbiters?: {
+            amount?: number;
+            color?: string;
+            orbitalRadius: number;
+            angularVelocity: number;
+            radius: number;
+        };
     }) {
         this.position_ = options.position ?? new Vec2D();
         this.velocity_ = options.velocity ?? new Vec2D();
         this.acceleration_ = options.acceleration ?? new Vec2D();
         this.radius_ = options.radius;
         this.mass_ = options.mass ?? Math.PI * this.radius_ ** 2;
+
+        if (options.orbiters) {
+            const amount = options.orbiters.amount ?? 1;
+            for (let i = 0; i < amount; ++i) {
+                this.orbiters.push(
+                    new Orbiter(
+                        this,
+                        ((Math.PI * 2) / amount) * i,
+                        options.orbiters.angularVelocity,
+                        options.orbiters.orbitalRadius,
+                        options.orbiters.radius
+                    )
+                );
+            }
+        }
     }
 
     public update(
@@ -54,6 +79,10 @@ export default class Mover {
             this.acceleration_.add(newAcceleration).mult(deltaTime * 0.5)
         );
         this.acceleration_ = newAcceleration;
+
+        for (const orbiter of this.orbiters) {
+            orbiter.update(deltaTime);
+        }
     }
 
     public applyForces(movers: Mover[], forces?: Vec2D[]): Vec2D {
@@ -134,6 +163,10 @@ export default class Mover {
         ctx.beginPath();
         ctx.arc(x, y, this.radius_, 0, 2 * Math.PI);
         ctx.fill();
+
+        for (const orbiter of this.orbiters) {
+            orbiter.render(canvas, color);
+        }
 
         return true;
     }
