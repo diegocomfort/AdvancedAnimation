@@ -7,3 +7,5 @@ export function resizeCanvas(canvas: HTMLCanvasElement) {
 export function mod(a: number, b: number): number {
     return a - b * Math.floor(a / b);
 }
+
+export const TAU = Math.PI * 2;
