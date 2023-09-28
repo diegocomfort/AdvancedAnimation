@@ -9,15 +9,13 @@ export default interface System {
     update(
         deltaTime: number,
         environment: ReadonlyArray<Readonly<System>>,
-        envWidth: number,
-        envHeight: number,
     ): void;
 
     /**
      * Change the environment if certain behaviors should occur
      * @param environment the environment that this System belongs to
      */
-    applyBehaviors(environment: Array<System>): void;
+    applyBehaviors(environment: Array<System>, envWidth: number, envHeight: number): void;
     
     /**
      * Render this System
