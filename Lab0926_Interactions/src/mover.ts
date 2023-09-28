@@ -1,6 +1,5 @@
 import Vec2D from "./vec2d.js";
-import { Utils } from "./utils.js";
-import Orbiter from "./Orbiter.js";
+import { mod } from "./utils.js";
 
 export default class Mover {
     private position_: Vec2D;
@@ -11,9 +10,9 @@ export default class Mover {
     private connections: Mover[] = [];
     private orbiters: Orbiter[] = [];
 
-    public get position(): Vec2D {
-        return this.position_;
-    }
+    // public get position(): Vec2D {
+    //     return this.position_;
+    // }
 
     public get velocity(): Vec2D {
         return this.velocity_;
@@ -115,8 +114,8 @@ export default class Mover {
     ): void {
         if (!bounce) {
             this.position_ = this.position_
-                .setX((x) => Utils.mod(x, width))
-                .setY((y) => Utils.mod(y, height));
+                .setX((x) => mod(x, width))
+                .setY((y) => mod(y, height));
             return;
         }
         if (this.position_.x - this.radius_ < 0) {
@@ -135,29 +134,7 @@ export default class Mover {
         }
     }
 
-    public checkMovers(movers: Mover[]) {
-        for (const mover of movers) {
-            if (this === mover) continue;
-
-            const r =
-                (this.orbiters[0]
-                    ? this.orbiters[0].orbtialRadius
-                    : 2 * this.radius_) +
-                (mover.orbiters[0]
-                    ? mover.orbiters[0].orbtialRadius
-                    : 2 * mover.radius_);
-
-            if (this.position_.dist(mover.position_) <= r) {
-                this.connections.push(mover);
-            }
-
-            if (this.connections.indexOf(mover) >= 0) {
-                mover.position_ = mover.position_
-                    .sub(this.position_)
-                    .setMagnitude(r).add(this.position_);
-            }
-        }
-    }
+    
 
     public limitVelocity(maxMagnitude: number): void {
         this.velocity_ = this.velocity_.limit(maxMagnitude);
@@ -174,11 +151,11 @@ export default class Mover {
             return false;
         }
 
-        const x = (modulus ? Utils.mod : (x: any, y: any) => x)(
+        const x = (modulus ? mod : (x: any, y: any) => x)(
             this.position_.x,
             canvas.width
         );
-        const y = (modulus ? Utils.mod : (x: any, y: any) => x)(
+        const y = (modulus ? mod : (x: any, y: any) => x)(
             this.position_.y,
             canvas.height
         );
