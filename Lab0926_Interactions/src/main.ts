@@ -55,7 +55,7 @@ function animate(game: {
     const n = 10;
     for (let i = 0; i < n; ++i) {
         for (const mover of game.env) {
-            mover.update(dt, game.env);
+            mover.update(dt / n, game.env);
         }
     }
 
