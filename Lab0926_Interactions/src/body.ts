@@ -72,7 +72,11 @@ export default class Body implements System {
         return f.div(this.mass);
     }
 
-    applyBehaviors(environment: Array<System>, envWidth: number, envHeight: number): void {
+    applyBehaviors(
+        environment: Array<System>,
+        envWidth: number,
+        envHeight: number
+    ): void {
         if (this.onWallCollision === "modulus") {
             this.position = this.position
                 .setX((x) => mod(x, envWidth))
