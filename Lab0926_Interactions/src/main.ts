@@ -1,6 +1,7 @@
 import Body from "./body.js";
+import BodyWithSatellites from "./bodywithsatellites.js";
 import System from "./system.js";
-import { resizeCanvas } from "./utils.js";
+import { TAU, resizeCanvas } from "./utils.js";
 import Vec2D from "./vec2d.js";
 
 window.addEventListener("load", init);
@@ -17,13 +18,18 @@ function init() {
     const n = 10;
     for (let i = 0; i < n; ++i) {
         game.env.push(
-            new Body({
+            new BodyWithSatellites({
                 radius: 40,
                 position: new Vec2D(
                     Math.random() * game.canvas.width,
                     Math.random() * game.canvas.height
                 ),
                 velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 20),
+            }, {
+                radius: 10,
+                amount: 4,
+                color: "red",
+                angularVelocity: TAU / 20
             })
         );
     }
