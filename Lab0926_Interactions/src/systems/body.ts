@@ -1,6 +1,6 @@
-import System from "./system.js";
-import Vec2D from "./vec2d.js";
-import { mod, TAU } from "./utils.js";
+import System from "../system.js";
+import Vec2D from "../vec2d.js";
+import { mod, TAU } from "../utils.js";
 
 export default class Body implements System {
     position: Vec2D;

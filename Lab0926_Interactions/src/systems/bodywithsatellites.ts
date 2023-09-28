@@ -1,7 +1,7 @@
 import Body from "./body.js";
-import System from "./system.js";
-import { TAU } from "./utils.js";
-import Vec2D from "./vec2d.js";
+import System from "../system.js";
+import { TAU } from "../utils.js";
+import Vec2D from "../vec2d.js";
 
 export default class BodyWithSatellites extends Body {
     angle: number;

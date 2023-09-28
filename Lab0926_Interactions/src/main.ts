@@ -1,5 +1,5 @@
-import Body from "./body.js";
-import BodyWithSatellites from "./bodywithsatellites.js";
+import Body from "./systems/body.js";
+import BodyWithSatellites from "./systems/bodywithsatellites.js";
 import System from "./system.js";
 import { TAU, resizeCanvas } from "./utils.js";
 import Vec2D from "./vec2d.js";
