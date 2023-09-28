@@ -1,4 +1,3 @@
-import Behavior from "./behavior.js";
 import Vec2D from "./vec2d.js";
 
 export default interface System {
