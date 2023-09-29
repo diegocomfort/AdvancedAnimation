@@ -5,6 +5,9 @@ export default class Vec2D {
     readonly y: number;
 
     constructor(x: number = 0, y: number = 0) {
+        if (Number.isNaN(x)) throw new Error("x is NaN");
+        if (Number.isNaN(y)) throw new Error("y is NaN");
+        
         this.x = x;
         this.y = y;
     }
