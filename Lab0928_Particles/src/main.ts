@@ -1,8 +1,6 @@
-import Body from "./systems/body.js";
-import BodyWithSatellites from "./systems/bodywithsatellites.js";
-import LinkingBody from "./systems/linkingbody.js";
+import Firework from "./systems/firework.js";
 import System from "./system.js";
-import { TAU, resizeCanvas } from "./utils.js";
+import { Color, TAU, resizeCanvas } from "./utils.js";
 import Vec2D from "./vec2d.js";
 
 window.addEventListener("load", init);
@@ -16,21 +14,13 @@ function init() {
 
     resizeCanvas(game.canvas);
 
-    const n = 10;
+    const n = 1;
     for (let i = 0; i < n; ++i) {
         game.env.push(
-            new LinkingBody({
-                radius: 40,
-                position: new Vec2D(
-                    Math.random() * game.canvas.width,
-                    Math.random() * game.canvas.height
-                ),
-                velocity: Vec2D.fromAngle(Math.random() * Math.PI * 2, Math.random() * 50),
-            }, {
-                radius: 10,
-                amount: 4,
-                color: "red",
-                angularVelocity: TAU / 20
+            new Firework({
+                position: new Vec2D(game.canvas.width / 2, game.canvas.height),
+                detonationHeight: game.canvas.height / 2,
+                color: new Color(255, 23, 45, 1)
             })
         );
     }
@@ -50,7 +40,7 @@ function animate(game: {
     game.time = currentTime;
 
     const ctx = game.canvas.getContext("2d")!;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.025)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
     ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
 
     const n = 10;
