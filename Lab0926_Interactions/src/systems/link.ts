@@ -13,8 +13,6 @@ export default class Link implements System {
         this.body2 = body2;
         this.distance = distance;
         this.color = color ?? "black";
-
-        this.body1.color = this.body2.color = "pink";
     }
 
     get position(): Vec2D {
@@ -29,20 +27,31 @@ export default class Link implements System {
         this.body1.update(deltaTime, environment);
         this.body2.update(deltaTime, environment);
 
-        // TODO: keep together
+        const actualDist = this.body1.position.dist(this.body2.position);
+        const delta = this.distance - actualDist;
+        const halfDistance = this.body1.position.sub(this.body2.position).setMagnitude(delta / 2);
+
+        this.body1.position = this.body1.position.add(halfDistance);
+        this.body2.position = this.body2.position.sub(halfDistance);
     }
 
     applyBehaviors(environment: System[], envWidth: number, envHeight: number): void {
         this.body1.applyBehaviors(environment, envWidth, envHeight);
         this.body2.applyBehaviors(environment, envWidth, envHeight);
-
-        // TODO: What behaviors?
     }
 
     render(canvas: HTMLCanvasElement): void {
         this.body1.render(canvas);
         this.body2.render(canvas);
 
-        // TODO: render the link
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(this.body1.position.x, this.body1.position.y);
+        ctx.lineTo(this.body2.position.x, this.body2.position.y);
+        ctx.stroke();
     }
 }
