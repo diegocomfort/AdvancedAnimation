@@ -1,6 +1,6 @@
 import System from "../system.js";
 import Vec2D from "../vec2d.js";
-import { mod, TAU } from "../utils.js";
+import { mod, TAU, Color } from "../utils.js";
 
 export default class Body implements System {
     position: Vec2D;
@@ -9,7 +9,7 @@ export default class Body implements System {
     mass: number;
     radius: number;
     onWallCollision: "bounce" | "modulus";
-    color: string;
+    color: Color;
 
     constructor(params: {
         radius: number;
@@ -18,7 +18,7 @@ export default class Body implements System {
         velocity?: Vec2D;
         acceleration?: Vec2D;
         onWallCollision?: "bounce" | "modulus";
-        color?: string;
+        color?: Color;
     }) {
         this.radius = params.radius;
         this.mass = params.mass ?? Math.PI * this.radius ** 2;
@@ -26,7 +26,7 @@ export default class Body implements System {
         this.velocity = params.velocity ?? new Vec2D();
         this.acceleration = params.acceleration ?? new Vec2D();
         this.onWallCollision = params.onWallCollision ?? "bounce";
-        this.color = params.color ?? "black";
+        this.color = params.color ?? new Color();
     }
 
     update(
@@ -104,7 +104,7 @@ export default class Body implements System {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.color.toString();
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, this.radius, 0, TAU);
         ctx.fill();
